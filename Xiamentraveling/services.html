@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>周边游</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- bootstrap-css -->
+<link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+<!--// bootstrap-css -->
+<!-- css -->
+<link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
+<!--// css -->
+<!-- font-awesome icons -->
+<link href="css/font-awesome.css" rel="stylesheet"> 
+<!-- //font-awesome icons -->
+<!-- font -->
+<link href='#css?family=Oswald:400,700,300' rel='stylesheet' type='text/css'>
+<link href='#css?family=Pacifico' rel='stylesheet' type='text/css'>
+<!-- //font -->
+<script src="js/jquery-1.11.1.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<!-- parallax -->
+	<script src="js/SmoothScroll.min.js"></script>
+	<script src="js/jarallax.js"></script>
+	<!-- //parallax -->
+	<style>
+	       html,
+	       body,
+	       #viewDiv {
+	           padding: 0;
+	           margin: 0;
+	           height: 100%;
+	           width: 100%;
+	       }
+	   </style>
+		
+	   <link rel="stylesheet" href="https://js.arcgis.com/4.19/esri/themes/light/main.css">
+	   <script src="https://js.arcgis.com/4.19/"></script>
+		
+	   <script>
+	       require([
+	           "esri/config",
+	           "esri/Map",
+	           "esri/views/MapView",
+	           "esri/layers/FeatureLayer",
+	           "esri/Graphic",
+	           "esri/layers/GeoJSONLayer",
+	           "esri/layers/CSVLayer",
+	           "esri/widgets/LayerList",
+	            "esri/renderers/SimpleRenderer",
+	           "esri/symbols/SimpleMarkerSymbol",
+	           "esri/Color",
+	           "esri/symbols/SimpleLineSymbol",
+	           "esri/renderers/support/UniqueValueInfo",
+	           "esri/smartMapping/renderers/color",
+	           "esri/widgets/Legend",
+	           "esri/renderers/UniqueValueRenderer",
+	           
+	            ], function (esriConfig, Map, MapView, FL, Graphic, GeoJSONLayer,CSVLayer,LayerList,SimpleRenderer,
+	               SimpleMarkerSymbol,
+	               Color,
+	               SimpleLineSymbol,
+	               UniqueValueInfo,
+	               colorRendererCreator,
+	               Legend,
+	               UR) {
+		
+	               esriConfig.apiKey = "AAPK56e3ac027f044c4089d8ceec232fc05dYaOuzVRzm8tMRqvzOvDvIEevbqJ85yppn9PacU6cy4duurJrVK9wo_8BcWO8i8bi";
+		
+	               const map = new Map({
+	                   basemap: "osm-standard" // Basemap layer service
+	               });
+		
+	              
+		
+	                            
+	 
+	 const csvLayerps = new CSVLayer({
+	   url: "https://wanglei28.github.io/GIS3WL/厦门市_旅游景点推荐.csv",
+	   copyright: "scenic spot",
+	   
+	   delimiter: ",",
+	   popupTemplate: {
+	    title: "{typecode}",
+	           content: "推荐指数 <b>{recommend}</b> <br/><br/> "+
+	           "Tel: <ba>{tel}</ba>"
+	         },
+	 });
+	 
+	 
+	 
+	 
+	 
+	
+	               
+	               
+	              
+	              
+	               
+		
+	               const view = new MapView({
+	                   map: map,
+	                   center: [118.097585,24.487776], // Longitude, latitude
+	                   zoom:11
+	                   , // Zoom level
+	                   container: "viewDiv" // Div element
+	               });
+	               
+	         let layerList = new LayerList({
+	         view: view
+	         });
+	         // Adds widget below other elements in the top left corner of the view
+	         view.ui.add(layerList, {
+	         position: "top-left"
+	         });
+	         
+	         
+	         
+	         
+	         
+	         
+	         
+	         
+	         
+	         
+	          //如果采用单一符号
+	               //step1
+	               const simpleMS = new SimpleMarkerSymbol({
+	                   color: new Color([255, 255, 191, 0.5]),
+	                   size: 6,
+	                   style: "triangle",
+	                   outline: new SimpleLineSymbol({
+	                       color:new Color([255, 255, 255]),
+	                       width:0
+	                   })
+	               });
+	               //step2
+	               const simpleR = new SimpleRenderer({
+	                  symbol:simpleMS
+	               });
+	               //step3
+	               csvLayerps.renderer = simpleR;
+	           
+	               //如果使用分类符号（unique value or categorized)
+	               const colors = ["rgba(242, 47, 0, 1)", "rgba(38, 255, 255, 1)", "rgba(255, 221, 0, 1)", "rgba(95, 245, 0, 1)", "rgba(0, 64, 255, 1)"];
+	               let uniqueR = {
+	                 type: "unique-value",  // autocasts as new UniqueValueRenderer()
+	                 field: "recommend",
+	                 defaultSymbol:{
+	                         type: "simple-marker", 
+	                         style: "square",
+	                         color: "colors[0]",
+	                         size: "8px", 
+	                         outline: {  
+	                           color: [ 255, 255, 0 ],
+	                           width: 0
+	                         }
+	                       },
+	                 uniqueValueInfos: [
+	                   new UniqueValueInfo({
+	                       label:"5",
+	                       symbol:{
+	                         type: "simple-marker", 
+	                         style: "square",
+	                         color: "colors[1]",
+	                         size: "8px", 
+	                         outline: {  
+	                           color: [ 255, 255, 0 ],
+	                           width: 0
+	                         }
+	                       },
+	                       value:"5"
+	                   })
+	                 ]
+	               };
+	           
+	               csvLayerps.renderer = uniqueR;
+	           
+	               //class break
+	               //// rgba(247, 252, 185, 1),rgba(173, 221, 142, 1),rgba(49, 163, 84, 1)
+	               let classBR = {
+	                 type: "class-breaks",  // autocasts as new ClassBreaksRenderer()
+	                 field: "recommend",
+	                 classBreakInfos: [
+	                   {
+	                     minValue: 1,  // 0 acres
+	                     maxValue: 3,  // 200,000 acres
+	                     symbol: {
+	                         type: "simple-marker", 
+	                         style: "triangle",
+	                         color: "rgba(250, 235, 180,1)",
+	                         size: "12px", 
+	                         outline: {  
+	                           color: [ 255, 255, 0  ],
+	                           width: 0
+	                         }
+	                       },  // will be assigned sym1
+	                     label: "推荐指数小于3"
+	                   }, {
+	                     minValue: 4,  // 200,001 acres
+	                     maxValue: 7,  // 500,000 acres
+	                     symbol: {
+	                         type: "simple-marker", 
+	                         style: "triangle",
+	                         color: "rgba(246, 203, 9,1)",
+	                         size: "12px", 
+	                         outline: {  
+	                           color: [ 255, 255, 0  ],
+	                           width: 0
+	                         }
+	                       },  // will be assigned sym2
+	                     label: "推荐指数4-7"
+	                   }, {
+	                     minValue: 8,  // 500,001 acres
+	                     maxValue: 10,  // 750,000 acres
+	                     symbol: {
+	                         type: "simple-marker", 
+	                         style: "triangle",
+	                         color: "rgba(200, 143, 56, 1)",
+	                         size: "12px", 
+	                         outline: {  
+	                           color: [255, 255, 0 ],
+	                           width: 0
+	                         }
+	                       },  // will be assigned sym2
+	                     label: "推荐指数大于7"
+	                   }
+	                 ]
+	               };
+	               
+	               csvLayerps.renderer = classBR;
+	               
+	               
+	                  
+		
+	                  
+	                  
+	               
+	               
+	               
+	               
+	               
+	               
+	              
+	               
+	               
+	                   
+	           
+	              map.add(csvLayerps);
+		
+	               
+	           
+	               let legend = new Legend({
+	                 view: view
+	               });
+		
+	               view.ui.add(legend, "bottom-right");
+	           
+	               view.on('click',function(evt){
+	                  
+	                       //点击，显示智能制图API
+	                   let colorParams = {
+	                     layer: csvLayerps,
+	                     view: view,
+	                     field: "recommend",
+	                     //normalizationField: "TOTPOP_CY",
+	                     classificationMethod: "natural-breaks",
+	                     numClasses: 4
+	                   };
+		
+	               // when the promise resolves, apply the renderer to the layer
+	               colorRendererCreator.createClassBreaksRenderer(colorParams)
+	                 .then(function(response){
+	                   csvLayerps.renderer = response.renderer;
+	                 });
+		
+	               });
+	           
+	           });
+	   </script>
+</head>
+<body>
+	<!-- banner -->
+	<div class="banner about-bg">
+		<div class="top-banner about-top-banner">
+			<div class="container">
+				
+				
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+		<div class="header">
+			<div class="container">
+				<div class="logo">
+					<h1>
+						<a href="index.html">特色景点</a>
+					</h1>
+				</div>
+				<div class="top-nav">
+					<nav class="navbar navbar-default">
+							<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">Menu						
+							</button>
+						<!-- Collect the nav links, forms, and other content for toggling -->
+						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+							<ul class="nav navbar-nav">
+								<li><a class="active" href="index.html">主页</a></li>
+								<li><a href="about.html">关于</a></li>
+								<li><a href="services.html">周边游</a></li>
+								<li><a href="codes.html">酒店</a></li>	
+								<li><a href="gallery.html">美食</a></li>
+								<li><a href="contact.html">在线地图</a></li>
+								<div class="clearfix"> </div>
+							</ul>	
+						</div>	
+					</nav>		
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+	<!-- //banner -->
+	<!-- a-about -->
+	<div class="a-grid">
+		<div class="container">
+			<div class="w3l-about-heading">
+				<h2>鼓浪屿</h2>
+				<p>厦门不是一个赶时间的地方，孤悬于厦门西海中的鼓浪屿，只有区区1.87平方公里，环岛走一周不过三四小时，小到即使迷路也不会产生恐慌，反而感到欣喜。有人说，你在鼓浪屿所能做的最正确的事情，就是，什么也不做。什么也不做，或许也是一种智慧，亦是勇气。</p>
+			    <img src="https://t7.baidu.com/it/u=648020084,3763056129&fm=193" width="1300" height="300"/>
+			</div>
+			<div class="agileits-services-grids">
+				<div class="col-md-6 w3l-services-grid">
+					<div class="services-grid-info">
+						<h4>厦门大学</h4>
+						<p>厦门大学，面朝大海春暖花开，说其是“中国最美校园”当之无愧。未去过的人已经听闻其最美；去过的人还在念念不忘。有人说，与其说厦大是一个校园，还不如说其是精致的海滨花园。
+厦大依山傍海，正大门与南普陀寺为邻，另一边则是美丽的海滨沙滩与胡里山炮台。校园内的旧建筑，清水墙、琉璃顶，也极富特色。而学生和僧人的学习及生活场景构成了厦大校园及其附近区域独特的景观。</p>
+					<img src="https://img2.baidu.com/it/u=3504589978,168797900&fm=253&fmt=auto&app=138&f=JPEG?w=751&h=500" width="500" height="350"/>
+					</div>
+					<div class="services-grid-info">
+						<h4>曾厝垵</h4>
+						<p>曾经的小渔村已经蜕变成清新文艺控必去之处。这里的客栈装饰得温馨而淡雅，店长和每个入住者亲切交谈。“聚在一起喝一杯茶，有一个小院，有天有地，种草种花，养猫养狗。”在曾厝垵，有的只是漫无目的闲逛的背包客一族。有的只是自弹自唱，就算没有人鼓掌也可以一脸愉悦的纯粹艺术家们。
+如果是清新文艺控，她们自会寻香而来。 </p>
+					<img src="https://img2.baidu.com/it/u=399241912,1089546704&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333" width="500" height="350"/>
+					</div>
+					<div class="services-grid-info">
+						<h4>环岛路骑行</h4>
+						<p>环岛路是厦门国际马拉松比赛的主赛道，被誉为世界最美的马拉松赛道。
+绕着环岛路骑自行车，聆听海浪，轻拂海风，真的是一种享受：大海、沙滩、青草、绿树构成一条海滨渡假休闲走廊，使人心旷神怡，而站在“一国两制，统一祖国”的大字面前，大小金门诸岛近在咫尺，让人顿生祖国统一之悠思。 </p>
+					<img src="https://img1.baidu.com/it/u=1184461513,2253966831&fm=253&fmt=auto&app=138&f=JPEG?w=751&h=500" width="500" height="350"/>
+					</div>
+				</div>
+				<div class="col-md-6 w3l-services-grid">
+					<div class="services-grid-info">
+						<h4>南普陀寺 </h4>
+						<p>南普陀寺是厦门著名古刹，居于鹭岛名山五老峰前，背依秀奇群峰，面临碧澄海港，风景绝佳。寺内千手观音工艺精绝，藏经阁珍藏佛教文物丰富多彩。庙宇周围保留众多名人题刻，寺后的五老峰，登顶远眺，山风海涛，尽收眼底。
+而南普陀寺的素斋更是独具特色，以其清纯素雅的独特风味驰名中外，变成了南普陀寺的一宝。</p>
+					<img src="https://img1.baidu.com/it/u=1766169538,834157897&fm=253&fmt=auto&app=138&f=JPEG?w=869&h=500" width="500" height="350"/>
+					</div>
+					<div class="services-grid-info">
+						<h4>万石植物园</h4>
+						<p>万石植物园位于万石岩一带而得名。这里早为名胜风景游览区，附近有闻名的厦门八大景之一“虎溪夜月”和小八景的“朝天笏”、“中岩玉笏”、“太平石笑”，景外景的“紫云得路”、“高读琴洞”等。50年代，建了一个库容15万立方米的万石岩水库。60年代初，辟为植物园，建有标本大楼、花展馆、茶室、仙人球培养场、荫生植物棚，拥有热带、亚热带的花草树木和各种植物品种4000多种。“松杉园”为园中之园，长年林木葱郁，不知秋冬。园内山水秀美，一年四季，花香鸟语，潺潺水流，令人流连忘返。</p>
+					<img src="https://img0.baidu.com/it/u=262420215,3676356244&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333" width="500" height="350"/>
+					</div>
+					<div class="services-grid-info">
+						<h4>湖里山炮台</h4>
+						<p>胡里山炮台是厦门甚为著名的历史遗物，位于厦门东南普厝垵附近胡里海滨。这里地势高峻险要，面临大海，视野开阔，与隔海屿仔尾互为犄角，可控制厦门港口，历来为海防要塞。清光绪十七年（1891年），福建水师在此筹建炮台，光绪二十二年竣工。炮台以乌樟树汁和石灰、糯米伴泥沙筑成，坚固无比。炮台内至今尚保存一尊德国克虏伯兵工厂造的大炮，内径28厘米，炮身长13.96米，重4.9万公斤，据说射程可达16000多米。当年造价花去银钱5万两。附近墙堡雉堞兵舍亦保存完好。</p>
+					<img src="https://img1.baidu.com/it/u=784361536,1218367119&fm=253&fmt=auto&app=138&f=JPEG?w=510&h=383" width="500" height="350"/>
+					</div>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+	<!-- //a-about -->
+	<!-- different -->
+	<div class="jarallax more-offer">
+		<div class="container">
+			<div class="w3-different-heading">
+				<h3>一半人文历史，一半山川湖海</h3>
+				<p>厦门一带以花岗岩为主要岩石，故山体多呈浑圆形，山上多怪石奇岩，坡上多花草林木，降水丰沛，山中多流泉飞瀑，依山濒海，山海之主兼有。厦门风景绮丽，名胜古迹多不胜数，其中最具特色和著名的海滨风光点，要数南普陀寺、万石植物园、胡里山炮台、厦门古城遗址、鸿山、望高石、厦门大学等。</p>
+			</div>
+			<div class="w3agile-different-info">
+				<p>在1100年前，厦门的先民们给厦门岛取名为新城后成夏门，后来文人雅客把夏门雅化成厦门！兰今天，我乘着轮渡，耳机里单曲循环着周杰伦的《晴天》，伴着咸咸的海风，登上了鼓浪屿。，厦门，有着大都市的繁华，也有着小镇的平和自在，鼓浪屿则是厦门文艺清新的悠然自得，是人文历史的最强显现。"不游鼓浪屿，枉费厦门行"。
+"世外有鹭屿，峻岩镇海门。碧波连碧空，白帆载白云。片瓦曰古寺，只榕若重林。抚琴思国士，竹影拭剑痕。”《鼓浪行》</p>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+        /* init Jarallax */
+        $('.jarallax').jarallax({
+            speed: 0.5,
+            imgWidth: 1366,
+            imgHeight: 768
+        })
+    </script>
+	<!-- //different -->
+	<h1>厦门旅游景点在线地图</h1>
+	 <div id="viewDiv"></div>
+	<!-- team -->
+	<div class="more-bottom">
+		<div class="container">
+			<div class="more-bottom-heading">
+				<h3>户外休闲一刻</h3>
+				<p>奔向山海和自由</p>
+			</div>
+			<div class="more-bottom-grids">
+				<div class="col-md-4 more-bottom-grid">
+					<div class="more-bottom-grid-info">
+						<div class="more-bottom-grid-img">
+							<img src="https://img1.baidu.com/it/u=3289143814,3047072554&fm=253&fmt=auto&app=138&f=JPEG?w=784&h=500" alt="" />
+						</div>
+						<div class="more-bottom-grid-text">
+							<h5>有些风景只有秋天才能看到，有些自由只有骑行才能体会，开启秋天第一场骑行，体验骑行带来的快乐吧！
+厦门有一条紧邻大海的自行车道，加上舒适的气候和优越的骑行条件，在这里骑行成为了很多朋友来厦门最向往的事情之一。
+想象着夕阳的余晖铺洒在海面上，三两好友，吹着海风，听着音乐，在海边骑行，这个画面不论过多少年都是美好的回忆</h5>
+							
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 more-bottom-grid">
+					<div class="more-bottom-grid-info">
+						<div class="more-bottom-grid-img">
+							<img src="https://img2.baidu.com/it/u=1967903550,1015849958&fm=253&fmt=auto&app=138&f=JPEG?w=667&h=500" alt="" />
+						</div>
+						<div class="more-bottom-grid-text">
+							<h5>厦门周边小众海岛太绝了，一到假期便想远离喧器，寻一处海边的诗意栖息地，去感受闲暇生活的喜悦和自然带来的快乐，自驾到月光沙滩，海水干净蔚蓝白色浪花席卷而来就是理想中的乌托邦，落日、沙滩、冲浪、赶海真的太美好了～冲浪后玩累了找了一个安逸的民宿慵懒偷闲的渡日几天</h5>
+							
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 more-bottom-grid">
+					<div class="more-bottom-grid-info">
+						<div class="more-bottom-grid-img">
+							<img src="https://img0.baidu.com/it/u=313488806,2191722677&fm=253&fmt=auto&app=138&f=JPEG?w=667&h=500" alt="" />
+						</div>
+						<div class="more-bottom-grid-text">
+							<h5>背靠大海远眺城市风光，置身于大自然的怀抱之中。我们可以轻装前往，感受在大自然中烧烤的乐趣，或者去周围探索各种优美的景色。傍晚吃着美食，看日落真是一件太治愈的事了。晚上可以在帐篷中欣赏天空中的繁星点点，和朋友喝喝酒聊聊天。清晨看着太阳一点点从山中升起，阳光照耀到每一寸大地，仿佛感受到了大自然的洗礼。在这里，你可以和亲朋好友一起，远离城市的繁杂喧器，让身心在纯真美好的光阴中涤荡。和爱的人，三俩好友在一起，去体验大自然，去看云券云舒。放松身心，这才是露营的意义。
+</h5>
+							
+						</div>
+					</div>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+	<!-- //team -->
+	
+</body>	
+</html>
