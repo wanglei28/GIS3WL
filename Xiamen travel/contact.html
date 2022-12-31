@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Contact</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- bootstrap-css -->
+<link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+<!--// bootstrap-css -->
+<!-- css -->
+<link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
+<!--// css -->
+<!-- font-awesome icons -->
+<link href="css/font-awesome.css" rel="stylesheet"> 
+<!-- //font-awesome icons -->
+<!-- font -->
+<link href='#css?family=Oswald:400,700,300' rel='stylesheet' type='text/css'>
+<link href='#css?family=Pacifico' rel='stylesheet' type='text/css'>
+<!-- //font -->
+<script src="js/jquery-1.11.1.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<!-- parallax -->
+<script src="js/SmoothScroll.min.js"></script>
+<!-- //parallax -->
+<meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <title>ArcGIS API for JavaScript Tutorials: Display a map</title>
+
+    <style>
+           html,
+           body,
+           #viewDiv {
+               padding: 0;
+               margin: 0;
+               height: 100%;
+               width: 100%;
+           }
+       </style>
+   
+       <link rel="stylesheet" href="https://js.arcgis.com/4.19/esri/themes/light/main.css">
+       <script src="https://js.arcgis.com/4.19/"></script>
+   
+       <script>
+           require([
+               "esri/config",
+               "esri/Map",
+               "esri/views/MapView",
+               "esri/layers/FeatureLayer",
+               "esri/Graphic",
+               "esri/layers/GeoJSONLayer",
+               "esri/layers/CSVLayer",
+               "esri/widgets/LayerList",
+                "esri/renderers/SimpleRenderer",
+               "esri/symbols/SimpleMarkerSymbol",
+               "esri/Color",
+               "esri/symbols/SimpleLineSymbol",
+               "esri/renderers/support/UniqueValueInfo",
+               "esri/smartMapping/renderers/color",
+               "esri/widgets/Legend",
+               "esri/renderers/UniqueValueRenderer",
+               
+                ], function (esriConfig, Map, MapView, FL, Graphic, GeoJSONLayer,CSVLayer,LayerList,SimpleRenderer,
+                   SimpleMarkerSymbol,
+                   Color,
+                   SimpleLineSymbol,
+                   UniqueValueInfo,
+                   colorRendererCreator,
+                   Legend,
+                   UR) {
+   
+                   esriConfig.apiKey = "AAPK56e3ac027f044c4089d8ceec232fc05dYaOuzVRzm8tMRqvzOvDvIEevbqJ85yppn9PacU6cy4duurJrVK9wo_8BcWO8i8bi";
+   
+                   const map = new Map({
+                       basemap: "arcgis-streets-night" // Basemap layer service
+                   });
+   
+                  
+   
+                  
+                   
+                    const csvLayer = new CSVLayer({
+       url: "https://wanglei28.github.io/GIS3WL/厦门市_餐饮部分1.csv",
+       copyright: "food",
+       
+       delimiter: ",",
+       popupTemplate: {
+        title: "{type}",
+               content: "Located in <b>{adname}</b> <br/><br/> "+
+               "Tel: <ba>{tel}</ba>"
+             },
+     });
+     map.add(csvLayer);  
+     
+     const csvLayerp = new CSVLayer({
+       url: "https://wanglei28.github.io/GIS3WL/厦门市_A级旅游景区.csv",
+       copyright: "scenic spot",
+       
+       delimiter: ",",
+       popupTemplate: {
+        title: "{typecode}",
+               content: "level <b>{level}</b>A级景区 <br/><br/> "+
+               "Tel: <ba>{tel}</ba>"
+             },
+     });
+     
+     
+     
+     var sms = new SimpleMarkerSymbol({
+                       style: "square",
+                       color: [250,100,100,0.3],
+                       size: "8px",
+                       outline: null
+                       
+                   });
+               
+                   const sr_fl = new SimpleRenderer({
+                       
+                       symbol:sms
+                   });
+               
+                   var ur_fl = new UR({
+                       field:"level",
+                       uniqueValueInfos:[
+                           {value:"5",symbol:{type:"simple-marker",style: "triangle",color: [193,76,59,0.8],size: "10px",outline: null}},
+                           {value:"4",symbol:{type:"simple-marker",style: "triangle",color: [232,210,72,0.8],size: "10px",outline: null}},
+                           {value:"3",symbol: {type:"simple-marker",style: "triangle",color: [100,100,250,0.8],size: "10px",outline: null}}]
+                       
+                   });
+               
+                   csvLayerp.renderer = ur_fl;
+     
+             map.add(csvLayerp);
+       
+     
+     const csvLayerh = new CSVLayer({
+          url: "https://wanglei28.github.io/GIS3WL/厦门市_酒店住宿.csv",
+          copyright: "hotel",
+          
+          delimiter: ",",
+          popupTemplate: {
+           title: "{typecode}",
+                  content: "评分 <b>{grade}</b>分 <br/><br/> "+
+                  "Tel: <ba>{tel}</ba>"
+                },
+        });
+        map.add(csvLayerh);  
+                   
+                    const geojsonlayer = new GeoJSONLayer({
+                       url: " https://wanglei28.github.io/GIS3WL/厦门市.json",
+                       copyright: "xiamen"
+                       
+                   });
+                   geojsonlayer.outFields = ["*"];
+                   map.add(geojsonlayer);
+                   
+                    
+                   
+                   
+                  
+                  
+                   
+   
+                   const view = new MapView({
+                       map: map,
+                       center: [118.097585,24.487776], // Longitude, latitude
+                       zoom:11
+                       , // Zoom level
+                       container: "viewDiv" // Div element
+                   });
+                   
+             let layerList = new LayerList({
+             view: view
+             });
+             // Adds widget below other elements in the top left corner of the view
+             view.ui.add(layerList, {
+             position: "top-left"
+             });
+             
+             
+             
+             
+             
+             
+             
+             
+             
+             
+              //如果采用单一符号
+                   //step1
+                   const simpleMS = new SimpleMarkerSymbol({
+                       color: new Color([255, 255, 191, 0.5]),
+                       size: 6,
+                       style: "triangle",
+                       outline: new SimpleLineSymbol({
+                           color:new Color([255, 255, 255]),
+                           width:0
+                       })
+                   });
+                   //step2
+                   const simpleR = new SimpleRenderer({
+                      symbol:simpleMS
+                   });
+                   //step3
+                   csvLayerh.renderer = simpleR;
+               
+                   //如果使用分类符号（unique value or categorized)
+                   const colors = ["rgba(242, 47, 0, 1)", "rgba(38, 255, 255, 1)", "rgba(255, 221, 0, 1)", "rgba(95, 245, 0, 1)", "rgba(0, 64, 255, 1)"];
+                   let uniqueR = {
+                     type: "unique-value",  // autocasts as new UniqueValueRenderer()
+                     field: "grade",
+                     defaultSymbol:{
+                             type: "simple-marker", 
+                             style: "square",
+                             color: "colors[0]",
+                             size: "8px", 
+                             outline: {  
+                               color: [ 255, 255, 0 ],
+                               width: 0
+                             }
+                           },
+                     uniqueValueInfos: [
+                       new UniqueValueInfo({
+                           label:"5",
+                           symbol:{
+                             type: "simple-marker", 
+                             style: "square",
+                             color: "colors[1]",
+                             size: "8px", 
+                             outline: {  
+                               color: [ 255, 255, 0 ],
+                               width: 0
+                             }
+                           },
+                           value:"5"
+                       })
+                     ]
+                   };
+               
+                   csvLayerh.renderer = uniqueR;
+               
+                   //class break
+                   //// rgba(247, 252, 185, 1),rgba(173, 221, 142, 1),rgba(49, 163, 84, 1)
+                   let classBR = {
+                     type: "class-breaks",  // autocasts as new ClassBreaksRenderer()
+                     field: "grade",
+                     classBreakInfos: [
+                       {
+                         minValue: 1,  // 0 acres
+                         maxValue: 3,  // 200,000 acres
+                         symbol: {
+                             type: "simple-marker", 
+                             style: "square",
+                             color: "rgba(202, 226, 104, 1)",
+                             size: "8px", 
+                             outline: {  
+                               color: [ 255, 255, 0  ],
+                               width: 0
+                             }
+                           },  // will be assigned sym1
+                         label: "评分小于3"
+                       }, {
+                         minValue: 4,  // 200,001 acres
+                         maxValue: 6,  // 500,000 acres
+                         symbol: {
+                             type: "simple-marker", 
+                             style: "square",
+                             color: "rgba(99, 154, 114, 1)",
+                             size: "8px", 
+                             outline: {  
+                               color: [ 255, 255, 0  ],
+                               width: 0
+                             }
+                           },  // will be assigned sym2
+                         label: "评分4-6"
+                       }, {
+                         minValue: 7,  // 500,001 acres
+                         maxValue: 10,  // 750,000 acres
+                         symbol: {
+                             type: "simple-marker", 
+                             style: "square",
+                             color: "rgba(78, 119, 125, 1)",
+                             size: "8px", 
+                             outline: {  
+                               color: [ 255, 255, 0 ],
+                               width: 0
+                             }
+                           },  // will be assigned sym2
+                         label: "评分大于6"
+                       }
+                     ]
+                   };
+                   
+                   csvLayerh.renderer = classBR;
+                   
+                  
+                   
+                   
+                       
+               
+                  //map.add(csvLayerp);
+   
+                   
+               
+                   let legend = new Legend({
+                     view: view
+                   });
+   
+                   view.ui.add(legend, "bottom-right");
+               
+                   view.on('click',function(evt){
+                      
+                           //点击，显示智能制图API
+                       let colorParams = {
+                         layer: csvLayerh,
+                         view: view,
+                         field: "grade",
+                         //normalizationField: "TOTPOP_CY",
+                         classificationMethod: "natural-breaks",
+                         numClasses: 3
+                       };
+   
+                   // when the promise resolves, apply the renderer to the layer
+                   colorRendererCreator.createClassBreaksRenderer(colorParams)
+                     .then(function(response){
+                       csvLayerh.renderer = response.renderer;
+                     });
+   
+                   });
+               
+               });
+       </script>
+
+
+
+</head>
+<body>
+	<!-- banner -->
+	<div class="banner about-bg">
+		<div class="top-banner about-top-banner">
+			<div class="container">
+				
+				
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+		<div class="header">
+			<div class="container">
+				<div class="logo">
+					<h1>
+						<a href="index.html">厦门在线地图</a>
+					</h1>
+				</div>
+				<div class="top-nav">
+					<nav class="navbar navbar-default">
+							<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">Menu						
+							</button>
+						<!-- Collect the nav links, forms, and other content for toggling -->
+						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+							<ul class="nav navbar-nav">
+								<li><a class="active" href="index.html">主页</a></li>
+								<li><a href="about.html">关于</a></li>
+								<li><a href="services.html">周边游</a></li>
+								<li><a href="codes.html">酒店</a></li>	
+								<li><a href="gallery.html">美食</a></li>
+								<li><a href="contact.html">在线地图</a></li>
+								<div class="clearfix"> </div>
+							</ul>	
+						</div>	
+					</nav>		
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+	<!-- //banner -->
+	 <div id="viewDiv"></div>
+	 
+	 <!-- team -->
+	 	<div class="more-bottom">
+	 		<div class="container">
+	 			<div class="more-bottom-heading">
+	 				<h3>厦门地图攻略</h3>
+	 				<p>厦门旅游怎么玩？</p>
+	 			</div>
+	 			<div class="more-bottom-grids">
+	 				<div class="col-md-4 more-bottom-grid">
+	 					<div class="more-bottom-grid-info">
+	 						<div class="more-bottom-grid-img">
+	 							<img src="https://img1.baidu.com/it/u=3775549679,2078514911&fm=253&fmt=auto&app=138&f=PNG?w=707&h=500" alt="" />
+	 						</div>
+	 						<div class="more-bottom-grid-text">
+	 							<h5>厦门旅游首推岛内思明区十湖里区，评分较高。同安区、海沧区距离主流景区远，不推荐，除非纯酒店度假才考虑岛外。
+1、厦鼓码头﹣厦门站：市政府所在，多酒店，没有什么民宿，是本地人生活的范围，吃喝玩乐逛十分便捷。吃货可以选择这里。
+2、中山路：1号线终点站，连接厦门北站，距离植物园、环岛路、沙坡尾等景点近，地铁、公交等十分快捷，各种吃喝多，但更偏向游客而不是本地。
+3、厦大周边：沙坡尾﹣厦大白城／公寓﹣珍珠湾﹣曾厝埃，适合看日落。住这里吃喝主要在沙坡尾和厦大公寓，比上面2个区域更少一些选择。距离各个景点都很近。预算十分充足一般会选择康莱德，海景房看日落、看鼓浪屿，楼下就是大商场、沙坡尾，吃喝逛一站配齐。鹭江侈家、希尔顿格芮位置和吃喝稍逊一筹。</h5>
+	 							
+	 						</div>
+	 					</div>
+	 				</div>
+	 				<div class="col-md-4 more-bottom-grid">
+	 					<div class="more-bottom-grid-info">
+	 						<div class="more-bottom-grid-img">
+	 							<img src="https://img1.baidu.com/it/u=2191326799,4425817&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" alt="" />
+	 						</div>
+	 						<div class="more-bottom-grid-text">
+	 							<h5>【小吃特产篇】点击地图可查看餐厅食物类型
+一，沙茶面，建议直接去吃【四里沙茶面】，料足，新鲜。够纯，本地人最爱的沙茶白。
+二，海蛎煎，不建议您去曾厝按，中山路吃。海蛎煎建议去吃【莲欢海蛎煎】，最原始的做法，最鲜的味道。
+三，土笋冻，五香肠，直接去【八市】阿杰五香。
+四，姜母鸭，八市里面的【鹭之味】现场制作，并且可以真空包装寄回去。
+五，馅饼，馅饼我建议去【吉治百货】。
+六，咖啡一条街，建议可以去【西堤咖啡一条街】坐在别墅天台，点一杯卡布奇诺，看湖水波光数数，甚是悠闲，偷得浮生一日闲感。</h5>
+	 							
+	 						</div>
+	 					</div>
+	 				</div>
+	 				<div class="col-md-4 more-bottom-grid">
+	 					<div class="more-bottom-grid-info">
+	 						<div class="more-bottom-grid-img">
+	 							<img src="https://img0.baidu.com/it/u=210444247,1645611056&fm=253&fmt=auto&app=138&f=JPG?w=709&h=500" alt="" />
+	 						</div>
+	 						<div class="more-bottom-grid-text">
+	 							<h5>厦门旅游景点攻略（点击地图可查看国家级景区级别和联系方式）
+厦门公园篇：  海湾公园，中山公园、东坪山公园、仙岳公园、五缘湾湿地公园、南湖公园、白鹭洲公园、薛岭山公园、虎头山公园、江头公园、莲花公园、大屏山郊野公园、天竺山森林公园
+厦门山脉篇：云顶山、仙岳山、狐尾山、天马山、阳台山、天竺山等
+厦门寺庙篇：厦门城隍庙、鸿山寺、日光岩寺、虎溪岩寺、白鹿洞寺、观音寺、土地庙等
+	 </h5>
+	 							
+	 						</div>
+	 					</div>
+	 				</div>
+	 				<div class="clearfix"> </div>
+	 			</div>
+	 		</div>
+	 	</div>
+	 	<!-- //team -->
+	 <!-- container -->
+	 <div class="container">
+	 	<div class="col-md-8 blog-top-left-grid">
+	 		<div class="left-blog left-single">
+	 			<div class="blog-left">
+	 			
+	 			</div>
+	 			<div class="response">
+	 				<h3>三天推荐路线</h3>
+	 				<div class="media response-info">
+	 					<div class="media-left response-text-left">
+	 						<a href="#">
+	 							<img class="media-object" src="https://img2.baidu.com/it/u=2183173551,618418409&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=500" alt="">
+	 						</a>
+	 						<h5><a href="#">DAY1</a></h5>
+	 					</div>
+	 					<div class="media-body response-text-right">
+	 						<p>选择1：酒店-->沙坡尾-->环岛路-->黄厝沙滩</p>
+							<p>选择2：酒店-->园林植物园（2.5h）-->南普陀寺(2.5h)-->厦大白城沙滩(2h)-->环岛路(2h)</p>
+	 						<ul>
+	 							
+	 							<!-- <li><a href="single.html"></a></li> -->
+	 						</ul>
+	 						<div class="media response-info">
+	 							<div class="media-left response-text-left">
+	 								<a href="#">
+	 									<img class="media-object" src="https://img1.baidu.com/it/u=3970016508,4195812666&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=353" alt="">
+	 								</a>
+	 								<h5><a href="#">DAY2</a></h5>
+	 							</div>
+	 							<div class="media-body response-text-right">
+	 								<p>选择1：酒店-->鼓浪屿（35r往返）-->中山路步行街</p>
+									<p>选择2：酒店-->西门-->雨林世界-->多肉植物区</p>
+	 								<ul>
+	 									<!-- <li>June 21, 2016</li> -->
+	 								<!-- 	<li><a href="single.html"></a></li> -->
+	 								</ul>		
+	 							</div>
+	 							<div class="clearfix"> </div>
+	 						</div>
+	 					</div>
+	 					<div class="clearfix"> </div>
+	 				</div>
+	 				<div class="media response-info">
+	 					<div class="media-left response-text-left">
+	 						<a href="#">
+	 							<img class="media-object" src="https://img1.baidu.com/it/u=1154565158,60995416&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=600" alt="">
+	 						</a>
+	 						<h5><a href="#">DAY3</a></h5>
+	 					</div>
+	 					<div class="media-body response-text-right">
+	 						<p>选择1：酒店-->植物园-->厦门科技馆-->集美学村</p>
+							<p>选择2：酒店-->集美学村(3h)-->沙坡尾(3h)-->中山路步行街(3h)</p>
+	 							
+	 					</div>
+	 					<div class="clearfix"> </div>
+	 				</div>
+	 			</div>
+	 			
+	 			
+	 		</div>
+	 	</div>
+	 	<div class="col-md-4 blog-top-right-grid">
+	 		
+	 		
+	 	</div>
+	 	<div class="clearfix"> </div>
+	 </div>
+	 <!-- //container -->
+	 
+	 
+	 <!-- footer -->
+	 <div class="footer">
+	 	<div class="container">
+	 		<div class="footer-grids">
+	 			<div class="col-md-3 footer-grid">
+	 				
+	 				
+	 			</div>
+	 			<div class="col-md-3 footer-grid">
+	 				<div class="footer-grid-heading">
+	 					<h4>目录</h4>
+	 				</div>
+	 				<div class="footer-grid-info">
+	 					<ul>
+	 						<li><a class="active" href="index.html">主页</a></li>
+	 						<li><a href="about.html">关于</a></li>
+	 						<li><a href="services.html">周边游</a></li>
+	 						<li><a href="codes.html">酒店</a></li>	
+	 						<li><a href="gallery.html">美食</a></li>
+	 						<li><a href="contact.html">在线地图</a></li>
+	 					</ul>
+	 				</div>
+	 			</div>
+	 			<div class="col-md-3 footer-grid">
+	 				
+	 				
+	 			</div>
+	 			<div class="col-md-3 footer-grid">
+	 				
+	 				<div class="footer-grid-info">
+	 					
+	 				</div>
+	 			</div>
+	 			<div class="clearfix"> </div>
+	 		</div>
+	 		
+	 	</div>
+	 </div>
+	 <!-- //footer -->
+	
+</body>	
+</html>
